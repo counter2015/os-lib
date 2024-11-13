@@ -80,7 +80,7 @@ object ZipOpTests extends TestSuite {
         dest = wd / "zipByExcludingCertainFiles"
       )
       val paths = os.walk(outputZipFilePath).sorted
-      val expected = Seq(wd / "zipByExcludingCertainFiles/File.amx")
+      val expected = Seq(wd / "zipByExcludingCertainFiles/File.amx", wd / "zipByExcludingCertainFiles")
       assert(paths == expected)
     }
 
@@ -141,7 +141,7 @@ object ZipOpTests extends TestSuite {
       // Unzip file to a destination folder
       val listedContents = os.unzip.list(source = wd / zipFileName).toSeq
 
-      val expected = Seq(os.sub / "File.txt", os.sub / "one.txt")
+      val expected = Seq(os.sub / "File.txt", os.sub / "one.txt", os.sub / "folder1")
       assert(listedContents == expected)
     }
 
@@ -169,7 +169,8 @@ object ZipOpTests extends TestSuite {
       val paths = os.walk(unzippedFolder)
       val expected = Seq(
         wd / "unzipAllExceptExcludingCertainFiles/File.txt",
-        wd / "unzipAllExceptExcludingCertainFiles/one.txt"
+        wd / "unzipAllExceptExcludingCertainFiles/one.txt",
+        wd / "folder1",
       )
 
       assert(paths == expected)
@@ -221,5 +222,23 @@ object ZipOpTests extends TestSuite {
       assert(file2Content == "Content of file2")
     }
 
+    test("emptyFolder") - prep { wd =>
+      val zipFileName = "zipCheckEmptyDirectory.zip"
+      val zipFile = os.zip(
+        dest = wd / zipFileName,
+        sources = Seq(
+          wd / "emptyFolder",
+          wd / "File.txt"
+        )
+      )
+
+      val unzippedFolder = os.unzip(
+        source = wd / zipFileName,
+        dest = wd / "unzipped-empty-directory"
+      )
+
+      os.walk(unzippedFolder).foreach(println)
+      assert(os.exists(unzippedFolder / "emptyFolder"))
+    }
   }
 }

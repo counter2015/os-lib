@@ -102,6 +102,7 @@ object zip {
             makeZipEntry0(path, source.dest.getOrElse(os.sub) / path.subRelativeTo(source.src))
           }
         }
+        makeZipEntry0(source.src, source.dest.getOrElse(os.sub / source.src.last))
       } else if (shouldInclude(source.src.last, excludePatterns, includePatterns)) {
         makeZipEntry0(source.src, source.dest.getOrElse(os.sub / source.src.last))
       }
@@ -153,17 +154,19 @@ object zip {
     val mtimeOpt = if (preserveMtimes) Some(os.mtime(file)) else None
 
     val fis = if (os.isFile(file)) Some(os.read.inputStream(file)) else None
-    try makeZipEntry0(sub, fis, mtimeOpt, zipOut)
+
+    val path = if (os.isDir(file)) sub.toString + "/" else sub.toString
+    try makeZipEntry0(path, fis, mtimeOpt, zipOut)
     finally fis.foreach(_.close())
   }
 
   private def makeZipEntry0(
-      sub: os.SubPath,
+      path: String,
       is: Option[java.io.InputStream],
       preserveMtimes: Option[Long],
       zipOut: ZipOutputStream
   ) = {
-    val zipEntry = new ZipEntry(sub.toString)
+    val zipEntry = new ZipEntry(path)
 
     preserveMtimes match {
       case Some(mtime) => zipEntry.setTime(mtime)

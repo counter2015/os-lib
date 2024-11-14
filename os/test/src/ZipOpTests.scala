@@ -81,7 +81,8 @@ object ZipOpTests extends TestSuite {
         dest = wd / "zipByExcludingCertainFiles"
       )
       val paths = os.walk(outputZipFilePath).sorted
-      val expected = Seq(wd / "zipByExcludingCertainFiles/File.amx", wd / "zipByExcludingCertainFiles")
+      val expected =
+        Seq(wd / "zipByExcludingCertainFiles/File.amx", wd / "zipByExcludingCertainFiles")
       assert(paths == expected)
     }
 
@@ -171,7 +172,7 @@ object ZipOpTests extends TestSuite {
       val expected = Seq(
         wd / "unzipAllExceptExcludingCertainFiles/File.txt",
         wd / "unzipAllExceptExcludingCertainFiles/one.txt",
-        wd / "folder1",
+        wd / "folder1"
       )
 
       assert(paths == expected)
